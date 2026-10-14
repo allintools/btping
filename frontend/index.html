@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>btping - 端口检测</title>
+</head>
+<body>
+<div class="app">
+  <header class="app-bar">
+    <div class="brand">
+      <span class="brand-mark"><i data-lucide="radar"></i></span>
+      <h1>btping</h1>
+      <span class="brand-sub">端口检测</span>
+    </div>
+    <div class="app-bar-actions">
+      <span class="status" id="status"><span class="status-dot"></span><span id="status-text">就绪</span></span>
+      <button class="btn btn-primary" id="start" title="开始检测 (Ctrl+Enter)" type="button">
+        <i data-lucide="play"></i><span>开始检测</span>
+      </button>
+      <button class="btn" disabled id="stop" title="停止 (Esc)" type="button">
+        <i data-lucide="square"></i><span>停止</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <section class="panel form-panel">
+      <div class="field field-targets">
+        <label for="targets">目标</label>
+        <textarea id="targets" placeholder="example.com&#10;10.0.0.1&#10;[::1]:443" spellcheck="false"></textarea>
+      </div>
+      <div class="form-fields">
+        <div class="field field-ports">
+          <label for="ports">端口</label>
+          <input id="ports" spellcheck="false" type="text" value="80,443"/>
+        </div>
+        <div class="field">
+          <label for="timeout">超时 ms</label>
+          <input id="timeout" max="60000" min="100" step="100" type="number" value="1500"/>
+        </div>
+        <div class="field">
+          <label for="rounds">每目标次数</label>
+          <input id="rounds" max="1000" min="1" type="number" value="4"/>
+        </div>
+        <div class="field">
+          <label for="interval">间隔 ms</label>
+          <input id="interval" max="60000" min="0" step="50" type="number" value="200"/>
+        </div>
+        <div class="field">
+          <label for="concurrency">并发</label>
+          <input id="concurrency" max="1024" min="1" type="number" value="50"/>
+        </div>
+        <div class="presets">
+          <span class="presets-label">常用端口</span>
+          <button class="chip" data-ports="80,443" type="button">Web</button>
+          <button class="chip" data-ports="22,3389" type="button">远程</button>
+          <button class="chip" data-ports="3306,5432,6379,27017" type="button">数据库</button>
+          <button class="chip" data-ports="1-1024" type="button">1-1024</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel results-panel">
+      <div class="progress-line"><span id="progress-bar"></span></div>
+      <div class="results-toolbar">
+        <div class="stats">
+          <span class="stat"><span>目标</span><b id="stat-targets">0</b></span>
+          <span class="stat"><span>可达</span><b id="stat-reachable">0</b></span>
+          <span class="stat"><span>成功</span><b id="stat-success">0</b></span>
+          <span class="stat"><span>失败</span><b id="stat-failed">0</b></span>
+          <span class="stat"><span>平均</span><b id="stat-avg">—</b></span>
+          <span class="stat"><span>用时</span><b id="stat-elapsed">—</b></span>
+        </div>
+        <div class="tools">
+          <label class="search">
+            <i data-lucide="search"></i>
+            <input id="filter" placeholder="筛选主机 / 端口" type="search"/>
+          </label>
+          <label class="check"><input id="only-failed" type="checkbox"/><span>只看失败</span></label>
+          <button class="btn btn-ghost" id="export" title="导出 CSV" type="button">
+            <i data-lucide="download"></i><span>导出</span>
+          </button>
+          <button class="btn btn-ghost" id="clear" title="清空结果" type="button">
+            <i data-lucide="eraser"></i><span>清空</span>
+          </button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="results">
+          <thead>
+          <tr>
+            <th class="col-host" data-sort="host">目标</th>
+            <th class="num col-port" data-sort="port">端口</th>
+            <th class="col-ip" data-sort="ip">IP</th>
+            <th class="col-status" data-sort="status">状态</th>
+            <th class="num" data-sort="lastMs">最近 ms</th>
+            <th class="num" data-sort="minMs">最小 ms</th>
+            <th class="num" data-sort="avgMs">平均 ms</th>
+            <th class="num" data-sort="maxMs">最大 ms</th>
+            <th class="num" data-sort="success">成功</th>
+            <th class="num" data-sort="loss">丢包</th>
+            <th class="col-note">说明</th>
+          </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+        <div class="empty" id="empty">
+          <i data-lucide="activity"></i>
+          <p>暂无结果</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</div>
+<script src="./src/main.js" type="module"></script>
+</body>
+</html>
